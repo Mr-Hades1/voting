@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lepisori.voting.dao.ContractMapper">
+
+    <resultMap id="contractMap" type="com.lepisori.voting.model.VoteSummary">
+        <!--非主键字段的对应,property表示实体类的属性名，column表示数据库的列名-->
+        <result property="name" column="v_name"></result>
+        <result property="address" column="v_address"></result>
+        <result property="winner" column="v_winner"></result>
+    </resultMap>
+
+<!--获取所有的投票信息列表-->
+    <select id="getAllContract" resultType="com.lepisori.voting.model.VoteSummary" resultMap="contractMap">
+        select * from contract
+    </select>
+<!--新增投票时插入-->
+    <insert id="insertContract" parameterType="com.lepisori.voting.model.VoteSummary">
+        insert into contract values(null,#{name},#{address},'投票未结束',1)
+    </insert>
+<!--结束投票时更新-->
+    <update id="updateContract" parameterType="string">
+        update contract set v_winner=#{winner} , state = 0 where v_address = #{address}
+    </update>
+
+</mapper>

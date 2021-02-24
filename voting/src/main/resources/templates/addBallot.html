@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>发起投票</title>
+    <meta charset="UTF-8"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+    <!--<link href="../static/css/bootstrap.min.css" rel="stylesheet" media="screen">--><!--测试使用-->
+    <style>
+        .controls input {
+            width: 300px;
+        }
+
+    </style>
+
+    <script src='http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js'></script>
+</head>
+<body>
+<br><br><br><br>
+<div class="panel panel-default" style="width: 504px;align-items: center;position: absolute;margin-left: 32%">
+    <div id="main" style="width: 504px; margin: 1px auto;  box-shadow: #eeeeee" class="panel-body">
+        <form class="form-horizontal" id="addBallot_form" action="/initVote" method="post">
+            <h2 style="text-align: center">添加投票</h2>
+            <br>
+            <div class="text-danger" id="msg" th:text="${msg}"></div> <!--保留占位符避免上下浮动-->
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">投票名称</span>
+                <input type="text" class="form-control" placeholder="voting theme" name="voteName">
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">投票人数</span>
+                <input type="text" class="form-control" name="voteNumber" placeholder="number"
+                       aria-describedby="basic-addon1">
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon3">获胜比例</span>
+                <input type="text" class="form-control" name="SuccessPercentage" placeholder="success percentage %"
+                       aria-describedby="basic-addon1">
+            </div>
+            <br>
+
+            <a href="#" id="AddMoreFileBox" class="btn btn-info">添加候选人名单</a></span></p>
+            <div id="InputsWrapper" class="input-group">
+                <span class="input-group-addon" id="basic-addon4">候选人</span>
+                <div class="input-group" style="width: 407px"><input type="text" name="candidates" class="form-control"
+                                                                     placeholder="candidate1"/>
+                    <a href="#" class="input-group-addon" name="remove">删除</a>
+                </div>
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon5">私钥</span>
+                <input type="text" class="form-control" name="privateKey" placeholder="your private key"
+                       aria-describedby="basic-addon1">
+            </div>
+            <br>
+
+
+            <div class="control-group">
+                <div class="controls" style="text-align: center">
+                    <label class="checkbox">
+                    </label>
+                    <input id="submit-button" type="submit" class="btn" value="发起投票"/>
+                    <a class="btn" href="/index">返回列表</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script>
+
+
+    $(function () {
+
+        let MaxInputs = 8; //maximum input boxes allowed
+        let InputsWrapper = $("#InputsWrapper"); //Input boxes wrapper ID
+        let AddButton = $("#AddMoreFileBox"); //Add button ID
+        let msg = $("#msg");
+        let FieldCount = 1; //to keep track of text box added
+
+        AddButton.click(function (e)  //on add input button click
+        {
+            if (FieldCount <= MaxInputs) //max input box allowed
+            {
+                FieldCount++; //text box added increment
+                //add input box
+                $(InputsWrapper).append('<div class="input-group" style="width: 407px"><input type="text" class="form-control" name="candidates" placeholder="candidate' + FieldCount + '"/>' +
+                    /*'<span style="cursor: pointer;" type="button" class="input-group-addon" class="btn-default"></span>'+*/
+                    '<a href="#"  class="input-group-addon" name="remove">删除</a>' +
+                    '</div>');
+            }
+            return false;
+
+        });
+
+        //对候选人的格式进行限定
+        //官方推荐动态绑定方法，效率高操作简便，一次可操作多个元素
+        $("body").on("blur", "[name='candidates']", function () {
+            //alert(this.value)
+            let maxLength = 20
+            let l = 0;
+            let flag = true //局部flag，便于循环判断
+            for (let i = 0; i < this.value.length; i++) {
+                if (/[\u4e00-\u9fa5]/.test(this.value[i])) {
+                    l += 2;
+                } else {
+                    l++;
+                }
+                if (l > maxLength) {
+                    msg.text("候选人姓名最长不超过十个汉字！");
+                    $(this).css("border", "1px solid #F00");
+                    flag = false;
+                    //this.value = this.value.substr(0, i);
+                    break;
+                }
+            }
+            if (flag) { //输入字数满足需求
+                msg.text("");
+                $(this).css("border", "1px solid #ccc"); //浏览器的初始input框颜色
+
+            }
+            if (l === 0) {
+                msg.text("候选人姓名不能为空！")
+                $(this).css("border", "1px solid #F00");
+            }
+        });
+
+
+        $("body").on("click", "[name='remove']", function () { //删除按钮
+            if (FieldCount > 1) {
+                $(this).parent('div').remove();
+                FieldCount--;
+            }
+
+            return false;
+        });
+
+
+        //在提交表单时进行查验
+        $("#submit-button").click(function () {
+
+            let voteName = $("[name='voteName']");
+            voteName.val()
+            if (voteName.val() == "") {
+                msg.text("投票名称不能为空！");
+                voteName.css("border", "1px solid #F00");
+                return false;
+            }
+
+            let reg = /^[0-9]*[1-9][0-9]*$/; //正整数
+            let voteNumber = $("[name='voteNumber']");
+            if (!reg.test(voteNumber.val())) {
+                //alert("VoteNumber should be greater than 0 !");
+                msg.text("投票人数应为大于零的整数！");
+                voteNumber.css("border", "1px solid #F00");
+                return false;
+            }
+
+            let percentage = $("[name='SuccessPercentage']");
+            if (!(reg.test(percentage.val()) && percentage.val() >= 0 && percentage.val() <= 100)) { //校验百分比输入是否正确
+                //alert("Percentage should be an integer between 0 and 100 !");
+                msg.text("获胜比例应为0到100之间的整数！");
+                percentage.css("border", "1px solid #F00");
+                return false;
+            }
+
+            let privateKey = $("[name='privateKey']");
+            privateKey.val($.trim(privateKey.val())); //过滤私钥两侧的空格
+            if (privateKey.val() == "") {
+                msg.text("私钥不能为空！");
+                privateKey.css("border", "1px solid #F00");
+                return false;
+            }
+
+            if (msg.text() != "") {
+                return false;
+            }
+
+            return true;
+        });
+
+
+    });
+
+</script>
+
+</body>
+</html>

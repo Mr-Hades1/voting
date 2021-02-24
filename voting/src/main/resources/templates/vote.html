@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>参与投票</title>
+    <meta charset="UTF-8"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+
+<br><br><br><br><br>
+<div class="panel panel-default" style="width: 500px;position: absolute;margin-left: 32%">
+    <div class="panel-body">
+        <div id="main" style="width: 500px; margin: 10px auto;align-items: center">
+            <form class="form-horizontal" id="vote_form">
+                <div class="control-group">
+                    <div class="controls">
+                        <h2 style="text-align: center">候选人列表</h2><br>
+                        <span style="text-align: center;color: #c9302c" th:text="${msg}"></span><br>
+                        <ul class="list-group" th:each="candidate:${candidates}" style="width: 80%;margin-left: 20%">
+                            <div class="form-inline row">
+                                <label class="form-control" style="width:250px;text-align: center"
+                                       th:text="${candidate.key}+'&nbsp;&nbsp;&nbsp;'+
+                        '  当前票数:'+ ${candidate.value}"></label>
+                                <button type="button" class="btn" id="candidatebutton" data-toggle="modal"
+                                        data-target="#exampleModal"
+                                        th:value="${candidate.key}" th:onclick="save([[${candidate.key}]])">投票
+                                </button>
+                            </div>
+                        </ul>
+                        <ul><a th:align="center" class="btn" href="/startVote" >刷新当前票数</a></ul>
+                        <br><br>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">进行投票</h4>
+            </div>
+            <div class="modal-body">
+                <form th:action="'/voteFor/'+${address}" method="post">
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">候选人:</label>
+                        <input type="text" name="candidate" class="form-control" id="recipient-name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">私钥:</label>
+                        <input class="form-control" name="privateKey" id="message-text"/>
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <input type="submit" class="btn btn-primary"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function save(name) {
+        //document.getElementById("recipient-name").value=document.getElementById("candidatebutton").value;
+        document.getElementById("recipient-name").value = name.trim()
+    }
+</script>
+
+<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

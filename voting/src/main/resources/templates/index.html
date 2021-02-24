@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>投票管理</title>
+    <meta charset="UTF-8" />
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+</head>
+<body>
+<div id="main" style="width: 1024px; margin: 10px  auto;">
+    <a class="btn" href="/addBallot">发起投票</a>
+    <hr />
+    <table class="table" id="ballot_tb">
+        <thead>
+        <tr>
+            <th style="font-size: large">名称</th>
+            <th style="font-size: large">发起人</th>
+            <th style="font-size: large">胜利者</th>
+            <th style="font-size: large">操作</th>
+        </tr>
+        <tr th:each="contract:${contracts}">
+            <th><a th:unless="!${contract.state}" th:href="'/startVote/'+${contract.address}" ><span th:text="${contract.name}"></span></a>
+                <span th:unless="${contract.state}" th:text="${contract.name}"></span>
+            </th>
+            <th th:text="${contract.address}"></th>
+            <th th:text="${contract.winner}"></th>
+            <th th:unless="!${contract.state}"><button type="button" class="btn" id="candidatebutton" data-toggle="modal"
+                    data-target="#exampleModal" th:onclick="save([[${contract.address}]])">终止投票
+            </button></th>
+            <th th:unless="${contract.state}"><span>投票已结束</span></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">校验发起人信息</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/closeVote" method="post">
+
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">合约地址:</label>
+                        <input class="form-control" name="address" id="message-text1"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">私钥:</label>
+                        <input class="form-control" name="privateKey" id="message-text"/>
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <input type="submit" class="btn btn-primary" value="提交"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<span th:text="${msg}"></span>
+<script>
+    function save(name) {
+        //document.getElementById("recipient-name").value=document.getElementById("candidatebutton").value;
+        document.getElementById("message-text1").value = name.trim()
+    }
+</script>
+<script th:src="@{https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+
+</body>
+</html>

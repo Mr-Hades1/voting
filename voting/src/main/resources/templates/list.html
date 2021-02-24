@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>结果展示</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" media="screen">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<!--
+   该页面仅用于结果展示，与vote.html页面区分开
+-->
+<br><br><br><br><br>
+<div class="panel panel-default" style="width: 500px;position: absolute;margin-left: 32%">
+    <div class="panel-body">
+        <div id="main" style="width: 500px; margin: 10px auto;align-items: center">
+            <form class="form-horizontal" id="vote_form">
+                <div class="control-group">
+                    <div class="controls">
+                        <h2 style="text-align: center">候选人列表</h2><br>
+                        <span th:align="center" style="color: #c9302c" th:text="${msg}"></span><br>
+                        <ul class="list-group" th:each="candidate:${candidates}" style="width: 80%;margin-left: 20%">
+                            <div class="form-inline row">
+                                <label class="form-control" style="width:250px;text-align: center"
+                                       th:text="${candidate.key}+'&nbsp;&nbsp;&nbsp;'+
+                        '  当前票数:'+ ${candidate.value}"></label>
+                            </div>
+                        </ul>
+                        <ul><a th:align="center" class="btn" href="/refresh" >刷新投票结果</a></ul>
+
+
+                        <br><br>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
